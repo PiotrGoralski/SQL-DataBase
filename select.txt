@@ -1,0 +1,34 @@
+﻿--Podaj imie, nazwisko i pensje pracowników urodzonych przed rokiem 1990
+select imie, nazwisko, pensja
+from pracownicy
+where dataurodzenia < '90/01/01';
+
+--Podaj imie, nazwisko i numer telefonu klientów którzy kupili samochód który by wyprodukowany w 2017 roku
+select imie, nazwisko, numertelefonu
+from transakcje t1 join klienci k1 on t1.klienci_idklienta=k1.idklienta
+join samochody s1 on s1.idsamochodu=t1.samochody_idsamochodu
+where s1.rokprodukcji=2017 and t1.idrodzajtransakcji=2;
+
+--Podaj kolory samochodów które zostaly kupione przez pracowników w salonach w Warszawie 
+select distinct k1.nazwakoloru
+from samochody s1 join kolorysamochodow k1 on s1.kolorysamochodow_idkoloru=k1.idkoloru
+join salony sal1 on sal1.idsalonu=s1.salony_idsalonu
+join transakcje t1 on t1.samochody_idsamochodu=s1.IDSAMOCHODU
+where sal1.miasto = 'Warszawa' and t1.idrodzajtransakcji=1;
+
+--Podaj imie i nazwisko pracowników, numer salonu oraz warotść sprzedanych samochodów w salonach z Warszawy, wartości posegreguj po wartościach transakcji malejąco
+select p1.imie, p1.nazwisko, sal1.idsalonu, t1.WARTOSCTRANSAKCJI
+from transakcje t1 join pracownicy p1 on t1.pracownicy_idpracownika=p1.idpracownika
+join salony sal1 on sal1.IDSALONU = p1.SALONY_IDSALONU
+where sal1.miasto = 'Warszawa' and t1.IDRODZAJTRANSAKCJI=2
+order by t1.wartosctransakcji desc;
+
+--Podaj ID, imie, nazwisko, pensje i numer salonu pracowników którzy wykonali przynajmniej 2 transakcje, posortuj wedlug salonów
+select distinct p1.idpracownika, p1.imie, p1.nazwisko, p1.pensja, p1.SALONY_IDSALONU
+from pracownicy p1 join transakcje t1 on p1.IDPRACOWNIKA=t1.PRACOWNICY_IDPRACOWNIKA
+where 2 < (
+            select count(1)
+            from transakcje t2
+            where t2.PRACOWNICY_IDPRACOWNIKA=t1.PRACOWNICY_IDPRACOWNIKA
+            )
+order by p1.salony_idsalonu;
